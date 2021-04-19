@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+<meta http-equiv="Content-Type" content="text/html "charset="UTF-8">
+<title>ElokuvalistaS</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+<script>
+
+$(document).ready(function(){
+	$('.delete').click(function(){
+	    return confirm("Haluatko varmasti poistaa elokuvan?");
+	})
+})
+
+</script>
+</head>
+<body>
+	<h1>Elokuvat</h1>
+	
+	
+	<form th:action="@{/logout}" method="post">
+		<input type="submit" value="Kirjaudu Ulos" class="btn-sm btn-danger">
+	</form> 
+	
+	<table class="table table-striped">
+		<tr>
+			<th>Nimi</th>
+			<th>Kesto</th>
+			<th>Genre</th>
+			<th>Tagit</th>
+			<th></th>
+			<th></th>
+		</tr>
+		<tr th:each = "elokuva : ${elokuvat}">
+			<td th:text ="${elokuva.nimi}"></td>
+			<td th:text ="${elokuva.kesto}"></td>
+			<td><a th:href="@{/elokuvatGenrella/{id}(id=${elokuva.genre.GenreId})}"><span th:text = "${elokuva.genre.nimi}"></span></a></td>
+			<td> <th:block th:each = "tag : ${elokuva.tagit}">
+				<a th:href="@{/elokuvatTagilla/{id}(id=${tag.TagId})}"><span th:text = "|#${tag.nimi}|"></span></a>
+				</th:block>
+			</td>
+			<td><a th:href="@{/edit/{id}(id=${elokuva.id})}">Muuta</a></td>
+			<td> <a id="delete" th:href="@{/delete/{id}(id=${elokuva.id})}" class="btn btn-danger delete" >Poista</a></td>
+		</tr>
+	
+	</table>
+	
+	<a href="/lisaaelokuva" class="btn btn-success">Uusi Elokuva</a>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+<meta http-equiv="Content-Type" content="text/html "charset="UTF-8">
+<title>Lisää elokuva</title>
+
+<script th:inline="javascript">
+
+		function addTag() {
+			
+				let rowindex = document.getElementById('taglist').getElementsByTagName('tr').length;	
+		
+				let input = document.createElement('input');
+	            input.id = "tags" + rowindex + ".tag";
+	            input.setAttribute("name", "tags[" + rowindex + "].nimi");
+	            input.setAttribute("type", "text");
+	            
+	            let tr = document.getElementById("taglist").insertRow(-1);
+	            let tdField = document.createElement('td');
+	            tdField.appendChild(input);
+	            tr.appendChild(tdField);
+	            
+				
+			
+			
+		}
+</script>
+
+
+</head>
+<body>
+	<h2>Muokkaa Elokuvaa</h2>
+	
+<form th:object="${elokuva}" th:action="@{/saveEdit}" action="#" method="post">
+		<label for="nimi">Nimi</label>
+		<input type="text" id="nimi" th:field="*{nimi}"></input><label for="nimi">Nimi</label>
+		<input type="hidden" id="nimi" th:field="*{id}"></input>
+		<label for="kesto">Kesto (min)</label>
+		<input type="text" id="kesto" th:field="*{kesto}"></input>
+		<label for "categories">Genre</label>
+			<select id="genre" th:field="*{genre}">
+				<option th:each="genre: ${genret}" th:value="${genre.id}" th:text="${genre.nimi}"></option>
+			</select>
+		<br/>
+		<h5>Muokkaa tageja</h5>
+        <table id="taglist">
+        <tr th:each = "tag, rowStat : *{tagit}">
+        	<td>
+        		<input type="text" th:field = "*{tagit[__${rowStat.index}__].nimi}">
+        		<input type="hidden" th:field = "*{tagit[__${rowStat.index}__].TagId}">
+        	</td><td>
+        		
+        	</td>
+        </tr>
+        </table>
+        <button type="button" name="addRow" class="btn btn-success" onClick="addTag()">Uusi Tag</button>
+		<input type="submit" value="Tallenna"></input>
+		
+	</form>
+
+</body>
+</html>

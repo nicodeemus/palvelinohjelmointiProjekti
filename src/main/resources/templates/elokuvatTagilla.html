@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+<meta http-equiv="Content-Type" content="text/html "charset="UTF-8">
+<title>Elokuvat tagilla</title>
+</head>
+<body>
+
+<h2 th:text = "|Elokuvat tagilla #${tag.nimi}|"></h2>
+
+<table class="table table-striped">
+		<tr>
+			<th>Nimi</th>
+			<th>Kesto</th>
+			<th>Genre</th>
+		</tr>
+		<tr th:each = "elokuva : ${tag.elokuvat}">
+			<td th:text ="${elokuva.nimi}"></td>
+			<td th:text ="${elokuva.kesto}"></td>
+			<td th:text ="${elokuva.genre.nimi}"></td>
+		</tr>
+	
+	</table>
+<a href="/elokuvalista">Takaisin elokuvalistaan</a>
+</body>
+</html>
