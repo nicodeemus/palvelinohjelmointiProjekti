@@ -9,6 +9,7 @@ import org.springframework.core.metrics.StartupStep.Tags;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,7 +35,7 @@ public class ElokuvaController {
 	@Autowired
 	private TagRepository trepository;
 	
-	@RequestMapping(value = "/elokuvalista")
+	@RequestMapping(value = {"/elokuvalista", "/",""})
 	public String Elokuvalist (Model model) {
 		model.addAttribute("elokuvat", erepository.findAll());
 		return "elokuvalista";
@@ -98,20 +99,52 @@ public class ElokuvaController {
 		return "redirect:../elokuvalista";
 	}
 	
-	@RequestMapping(value="/save", method = RequestMethod.POST)
-	public String saveElokuva(Elokuva elokuva) {
-		boolean wasMerged = false;	
+	//funktio rivin lisäämiseen tageille
+	@RequestMapping(value = "/addrow", method = RequestMethod.POST)
+	public String addnewrow(@ModelAttribute Elokuva elokuva, Model model) {
 		
+		elokuva.getTagit().add(new Tag());
+		model.addAttribute("elokuva", elokuva);
+		model.addAttribute("genret", grepository.findAll());
+		
+		if(elokuva.getTagit().get(0).getTagId()==null) {
+			return "elokuvaLisays";
+		}else {
+			return "elokuvaMuokkaus";
+		}
+		
+	}
+	
+	@RequestMapping(value="/save", method = RequestMethod.POST)
+	public String saveElokuva(@ModelAttribute Elokuva elokuva) {
+		
+		
+		
+		//Tarkastaa ettei samoja tageja
+		for(int i = 0; i<elokuva.getTagit().size(); i++) {
+			elokuva.getTagit().get(i).setNimi(elokuva.getTagit().get(i).getNimi().toLowerCase().replaceAll("\\s+", ""));
+			for(int j= i+1; j<elokuva.getTagit().size(); j++) {
+				elokuva.getTagit().get(j).setNimi(elokuva.getTagit().get(j).getNimi().toLowerCase().replaceAll("\\s+", ""));
+				if(elokuva.getTagit().get(i).getNimi().equals(elokuva.getTagit().get(j).getNimi())) {
+					elokuva.getTagit().remove(j);
+					j--;
+				}
+			}
+		}
+		
+		boolean wasMerged = false;	
+				
 		Iterable<Tag> kaikkiTagit = trepository.findAll();
 		List<Tag>  elokuvaTagit = elokuva.getTagit();
 		
+		//poistaa isot kirjaimet ja välit, yhdistää uudet tagit vanhoihin tai tallentaa uudet
 		for(int i = 0; i<elokuvaTagit.size(); i++) {
-			System.out.println(elokuvaTagit.get(i).getNimi());
+
 			if(elokuvaTagit.get(i).getNimi().isEmpty()) {
 				elokuvaTagit.remove(i);
 				continue;
 			}
-			elokuvaTagit.get(i).setNimi(elokuvaTagit.get(i).getNimi().toLowerCase().replaceAll("\\s+", ""));
+			
 			for(Tag tag : kaikkiTagit) {
 			wasMerged=false;
 				
@@ -134,38 +167,55 @@ public class ElokuvaController {
 	
 		
 		@RequestMapping(value="/saveEdit", method = RequestMethod.POST)
-		public String saveEditedElokuva(Elokuva elokuva) {
+		public String saveEditedElokuva(@ModelAttribute Elokuva elokuva) {
 			
-			
+			//Tarkastaa ettei samoja tageja
+			for(int i = 0; i<elokuva.getTagit().size(); i++) {
+				elokuva.getTagit().get(i).setNimi(elokuva.getTagit().get(i).getNimi().toLowerCase().replaceAll("\\s+", ""));
+				for(int j= i+1; j<elokuva.getTagit().size(); j++) {
+					elokuva.getTagit().get(j).setNimi(elokuva.getTagit().get(j).getNimi().toLowerCase().replaceAll("\\s+", ""));
+					if(elokuva.getTagit().get(i).getNimi()==elokuva.getTagit().get(j).getNimi()) {
+						elokuva.getTagit().remove(j);
+						j--;
+					}
+				}
+			}
 			
 			boolean wasMerged = false;
 			boolean TagNameWasAltered = false;
 			
+			
+			//hdistää uudet tagit vanhoihin tai tallentaa uudet
 			Iterable<Tag> kaikkiTagit = trepository.findAll();
 			List<Tag>  elokuvaTagit = elokuva.getTagit();
-			
+		
 			for(int i = 0; i<elokuvaTagit.size(); i++) {
+				
 				if(elokuvaTagit.get(i).getNimi().isEmpty()) {
 					elokuvaTagit.remove(i);
 					continue;
 				}
-				elokuvaTagit.get(i).setNimi(elokuvaTagit.get(i).getNimi().toLowerCase().replaceAll("\\s+", ""));
+
 				for(Tag tag : kaikkiTagit) {
+					System.out.println(elokuvaTagit.get(i));
 				wasMerged=false;
-					//jos id ja nimi sama
+					
 					if(elokuvaTagit.get(i).getNimi().equals(tag.getNimi())&&
-						elokuvaTagit.get(i).getTagId().equals(tag.getTagId())){
+							tag.getTagId().equals(elokuvaTagit.get(i).getTagId())){
 							elokuvaTagit.get(i).setTagId(tag.getTagId());
 							wasMerged = true;
 							break;
-					//jos nimi sama mutta id eri
+					
 					}else if(elokuvaTagit.get(i).getNimi().equals(tag.getNimi())&&
-					!(elokuvaTagit.get(i).getTagId().equals(tag.getTagId()))) {
+					!(tag.getTagId().equals(elokuvaTagit.get(i).getTagId()))) {
 						elokuvaTagit.get(i).setTagId(tag.getTagId());
 						break;
-					//jos id sama mutta eri nimi
+						
+					
+						
+					
 					}else if(!(elokuvaTagit.get(i).getNimi().equals(tag.getNimi()))&&
-					elokuvaTagit.get(i).getTagId().equals(tag.getTagId())) {
+						tag.getTagId().equals(elokuvaTagit.get(i).getTagId())) {
 						elokuvaTagit.get(i).setTagId(null);
 						TagNameWasAltered = true;
 						break;
@@ -173,6 +223,8 @@ public class ElokuvaController {
 					}
 						
 					}
+				
+
 				if(!wasMerged || TagNameWasAltered) {
 						trepository.save(elokuvaTagit.get(i));	
 				}

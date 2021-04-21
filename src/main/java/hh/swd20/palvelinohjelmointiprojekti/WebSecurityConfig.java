@@ -35,6 +35,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 		.and()
 		.authorizeRequests().antMatchers("/elokuvatTagilla/*").permitAll()
 		.and()
+		.authorizeRequests().antMatchers("/elokuvatGenrella/*").permitAll()
+		.and()
 		.authorizeRequests().anyRequest().authenticated()
 		.and()
 		.formLogin()
