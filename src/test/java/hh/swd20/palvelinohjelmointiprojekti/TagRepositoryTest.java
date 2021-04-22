@@ -21,6 +21,8 @@ public class TagRepositoryTest {
 	@Autowired
 	private TagRepository repository;
 	
+	
+	//Uuden tagin testaus
 	@Test
 	public void createNewTag() {
 		Tag tag = new Tag();
@@ -28,6 +30,7 @@ public class TagRepositoryTest {
 		assertThat(tag.getTagId()).isNotNull();
 	}
 	
+	//Tagin editoinnin testaus
 	@Test
 	public void editTag() {
 		Tag tag = new Tag("tag1");
@@ -40,6 +43,7 @@ public class TagRepositoryTest {
 		assertThat(repository.findById(tag.getTagId()).get().getNimi()).isEqualTo("tag2");
 	}
 	
+	//Tagin poiston testaus
 	@Test
 	public void deleteTag() {
 		Tag Tag = new Tag();

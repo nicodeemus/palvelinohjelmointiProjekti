@@ -35,12 +35,14 @@ public class ElokuvaController {
 	@Autowired
 	private TagRepository trepository;
 	
+	//Listaa kaikki elokuvat
 	@RequestMapping(value = {"/elokuvalista", "/",""})
 	public String Elokuvalist (Model model) {
 		model.addAttribute("elokuvat", erepository.findAll());
 		return "elokuvalista";
 	}  
 	
+	//Uuden elokuvan lisäys
 	@RequestMapping(value = "/lisaaelokuva")
 	public String LisaaElokuva (Model model) {
 		Elokuva elokuva = new Elokuva();
@@ -59,6 +61,7 @@ public class ElokuvaController {
 		return "login";
 	}  
 	
+	//Yksittäisen elokuvan muokkaus
 	@RequestMapping(value ="/edit/{id}", method = RequestMethod.GET)
 	public String editElokuva(@PathVariable("id") Long elokuvaId, Model model) {
 		
@@ -72,6 +75,7 @@ public class ElokuvaController {
 		return "elokuvaMuokkaus";
 	}
 	
+	//Hakee kaikki elokuvat tietyllä tagilla
 	@RequestMapping(value="/elokuvatTagilla/{id}", method = RequestMethod.GET)
 	public String elokuvatTagilla(@PathVariable("id") Long tagId, Model model) {
 		
@@ -82,6 +86,7 @@ public class ElokuvaController {
 		return "elokuvatTagilla";
 	}
 	
+	//Hakee kaikki elokuvat kaikki genrellä
 	@RequestMapping(value="/elokuvatGenrella/{id}", method = RequestMethod.GET)
 	public String elokuvatGenrella(@PathVariable("id") Long genreId, Model model) {
 		
@@ -92,14 +97,14 @@ public class ElokuvaController {
 		return "elokuvatGenrella";
 	}
 	
-
+	//Poistaa yksittäisen elokuvan id:llä
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
 	public String deleteElokuva(@PathVariable("id") Long Id, Model model) {
 		erepository.deleteById(Id);
 		return "redirect:../elokuvalista";
 	}
 	
-	//funktio rivin lisäämiseen tageille
+	//Lisää uuden rivin tagilistaan ja palauttaa saman sivun  
 	@RequestMapping(value = "/addrow", method = RequestMethod.POST)
 	public String addnewrow(@ModelAttribute Elokuva elokuva, Model model) {
 		
@@ -114,7 +119,7 @@ public class ElokuvaController {
 		}
 		
 	}
-	
+	//Uuden elokuvan tallennus
 	@RequestMapping(value="/save", method = RequestMethod.POST)
 	public String saveElokuva(@ModelAttribute Elokuva elokuva) {
 		
@@ -165,7 +170,7 @@ public class ElokuvaController {
 		return "redirect:elokuvalista";
 	}
 	
-		
+		//Tallentaa muokatun elokuvan
 		@RequestMapping(value="/saveEdit", method = RequestMethod.POST)
 		public String saveEditedElokuva(@ModelAttribute Elokuva elokuva) {
 			
@@ -185,7 +190,7 @@ public class ElokuvaController {
 			boolean TagNameWasAltered = false;
 			
 			
-			//hdistää uudet tagit vanhoihin tai tallentaa uudet
+			//Yhdistää uudet tagit vanhoihin tai tallentaa uudet
 			Iterable<Tag> kaikkiTagit = trepository.findAll();
 			List<Tag>  elokuvaTagit = elokuva.getTagit();
 		

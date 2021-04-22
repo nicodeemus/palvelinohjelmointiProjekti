@@ -19,6 +19,7 @@ public class ElokuvaRepositoryTest {
 	@Autowired
 	private ElokuvaRepository repository;
 	
+	//elokuvan luonnin testaus
 	@Test
 	public void createNewElokuva() {
 		Elokuva elokuva = new Elokuva();
@@ -26,6 +27,7 @@ public class ElokuvaRepositoryTest {
 		assertThat(elokuva.getId()).isNotNull();
 	}
 	
+	//elokuvan poiston testaus
 	@Test
 	public void deleteElokuva() {
 		Elokuva elokuva = new Elokuva();
